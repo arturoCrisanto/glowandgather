@@ -18,10 +18,10 @@ export const adminService = {
       if (name.trim().length < 2) {
         throw new AppError(400, "Name must be at least 2 characters long");
       }
-
+      //TODO this need to be refactored for race conditions
       const existingAdmin = await adminRepository.findAdminByEmail(email);
       if (existingAdmin) {
-        throw new AppError(400, "Admin with this email already exists");
+        throw new AppError(409, "Admin with this email already exists");
       }
 
       const admin = await adminRepository.createAdmin(email, password, name);
