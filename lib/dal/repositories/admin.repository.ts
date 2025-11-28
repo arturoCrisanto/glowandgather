@@ -51,4 +51,7 @@ export const adminRepository = {
       where: { id },
     });
   },
+  async countAdmins() {
+    return await prisma.admin.count();
+  },
 };
