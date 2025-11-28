@@ -126,8 +126,6 @@ export const adminService = {
     }
   },
 
-  // ...existing code...
-
   async deleteAdmin(id: string) {
     try {
       logger.info("Deleting admin", { id });
@@ -137,6 +135,7 @@ export const adminService = {
         throw new AppError(404, "Admin not found");
       }
 
+      // Prevent deletion if it's the last admin
       const adminCount = await adminRepository.countAdmins();
       if (adminCount <= 1) {
         throw new AppError(400, "Cannot delete the last admin account");
@@ -152,6 +151,4 @@ export const adminService = {
       throw new AppError(500, "Failed to delete admin");
     }
   },
-
-  // ...existing code...,
 };
