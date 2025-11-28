@@ -9,11 +9,61 @@ datasource db {
   provider = "mongodb"
 }
 
-// Example User model for MongoDB
-model User {
+// Admin model for authentication
+model Admin {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
-  name      String?
+  password  String // Should be hashed
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Product categories enum
+enum ProductCategory {
+  CANDLES
+  ROOM_SPRAYS
+  WAX_MELTS
+}
+
+// Products model
+model Product {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  category    ProductCategory
+  price       Float
+  description String
+
+  // Size/Weight (flexible for different product types)
+  bottleSize String? // For room sprays (e.g., "100ml", "250ml")
+  weight     String? // For candles and wax melts (e.g., "200g", "8oz")
+
+  ingredients  String[] // Array of ingredients
+  scentProfile String // Description of scent
+  uses         String // How to use the product
+  burnTime     String? // For candles (e.g., "40 hours")
+
+  images   String[] // Array of image URLs
+  inStock  Boolean  @default(true)
+  featured Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([featured])
+}
+
+// Contact form submissions (emails from users)
+model ContactMessage {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([isRead])
+  @@index([createdAt])
 }
