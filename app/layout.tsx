@@ -21,7 +21,7 @@ export const metadata = generateMetadata({
     "aromatherapy",
   ],
   path: "/",
-  image: "./public/images/og-image.jpg",
+  image: "/images/og-image.jpg",
   type: "website",
 });
 
