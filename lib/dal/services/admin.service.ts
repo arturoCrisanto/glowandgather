@@ -18,10 +18,10 @@ export const adminService = {
       if (name.trim().length < 2) {
         throw new AppError(400, "Name must be at least 2 characters long");
       }
-
+      //TODO this need to be refactored for race conditions
       const existingAdmin = await adminRepository.findAdminByEmail(email);
       if (existingAdmin) {
-        throw new AppError(400, "Admin with this email already exists");
+        throw new AppError(409, "Admin with this email already exists");
       }
 
       const admin = await adminRepository.createAdmin(email, password, name);
@@ -31,6 +31,15 @@ export const adminService = {
       return adminWithoutPassword;
     } catch (error) {
       if (error instanceof AppError) throw error;
+
+      // Handle Prisma unique constraint violation
+      if (
+        error instanceof Error &&
+        error.message.includes("Unique constraint")
+      ) {
+        throw new AppError(409, "Admin with this email already exists");
+      }
+
       logger.error("Failed to register admin", error, { email, name });
       throw new AppError(500, "Failed to register admin");
     }
@@ -121,12 +130,19 @@ export const adminService = {
       return adminWithoutPassword;
     } catch (error) {
       if (error instanceof AppError) throw error;
+
+      // Handle Prisma unique constraint violation
+      if (
+        error instanceof Error &&
+        error.message.includes("Unique constraint")
+      ) {
+        throw new AppError(409, "Email already taken");
+      }
+
       logger.error("Failed to update admin", error, { id });
       throw new AppError(500, "Failed to update admin");
     }
   },
-
-  // ...existing code...
 
   async deleteAdmin(id: string) {
     try {
@@ -137,6 +153,7 @@ export const adminService = {
         throw new AppError(404, "Admin not found");
       }
 
+      // Prevent deletion if it's the last admin
       const adminCount = await adminRepository.countAdmins();
       if (adminCount <= 1) {
         throw new AppError(400, "Cannot delete the last admin account");
@@ -152,6 +169,4 @@ export const adminService = {
       throw new AppError(500, "Failed to delete admin");
     }
   },
-
-  // ...existing code...,
 };
