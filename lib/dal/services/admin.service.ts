@@ -31,6 +31,15 @@ export const adminService = {
       return adminWithoutPassword;
     } catch (error) {
       if (error instanceof AppError) throw error;
+
+      // Handle Prisma unique constraint violation
+      if (
+        error instanceof Error &&
+        error.message.includes("Unique constraint")
+      ) {
+        throw new AppError(409, "Admin with this email already exists");
+      }
+
       logger.error("Failed to register admin", error, { email, name });
       throw new AppError(500, "Failed to register admin");
     }
@@ -121,6 +130,15 @@ export const adminService = {
       return adminWithoutPassword;
     } catch (error) {
       if (error instanceof AppError) throw error;
+
+      // Handle Prisma unique constraint violation
+      if (
+        error instanceof Error &&
+        error.message.includes("Unique constraint")
+      ) {
+        throw new AppError(409, "Email already taken");
+      }
+
       logger.error("Failed to update admin", error, { id });
       throw new AppError(500, "Failed to update admin");
     }
