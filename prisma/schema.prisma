@@ -7,6 +7,7 @@ generator client {
 
 datasource db {
   provider = "mongodb"
+  url      = env("DATABASE_URL") // @prisma-lint-ignore
 }
 
 // Admin model for authentication
@@ -43,27 +44,47 @@ model Product {
   uses         String // How to use the product
   burnTime     String? // For candles (e.g., "40 hours")
 
-  images   String[] // Array of image URLs
-  inStock  Boolean  @default(true)
-  featured Boolean  @default(false)
+  images       String[] // Array of image URLs
+  inStock      Boolean  @default(true)
+  isBestSeller Boolean  @default(false) // For homepage best offers section
+  isActive     Boolean  @default(true) // Admin can hide products
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([category])
-  @@index([featured])
+  @@index([isBestSeller])
+  @@index([isActive])
 }
 
 // Contact form submissions (emails from users)
 model ContactMessage {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String
   subject   String?
   message   String
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
+  isRead    Boolean       @default(false)
+  status    MessageStatus @default(PENDING)
+  createdAt DateTime      @default(now())
 
   @@index([isRead])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum MessageStatus {
+  PENDING
+  DELIVERED
+}
+
+model ContactLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  messageId String   @db.ObjectId
+  action    String
+  details   Json?
+  createdAt DateTime @default(now())
+
+  @@index([messageId])
   @@index([createdAt])
 }

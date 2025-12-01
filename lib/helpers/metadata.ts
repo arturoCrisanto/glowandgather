@@ -10,6 +10,7 @@ export interface MetadataParams {
   price?: number;
   currency?: string;
   availability?: "instock" | "outofstock";
+  noIndex?: boolean;
 }
 
 export function generateMetadata(params: MetadataParams): Metadata {
@@ -23,6 +24,7 @@ export function generateMetadata(params: MetadataParams): Metadata {
     price,
     currency = "PHP",
     availability,
+    noIndex = false,
   } = params;
 
   const url = `https://glowandgather.com${path}`;
@@ -69,11 +71,11 @@ export function generateMetadata(params: MetadataParams): Metadata {
 
     // Additional metadata
     robots: {
-      index: true,
-      follow: true,
+      index: !noIndex,
+      follow: !noIndex,
       googleBot: {
-        index: true,
-        follow: true,
+        index: !noIndex,
+        follow: !noIndex,
         "max-video-preview": -1,
         "max-image-preview": "large",
         "max-snippet": -1,

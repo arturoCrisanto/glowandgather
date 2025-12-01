@@ -3,6 +3,8 @@ import { inter, playfairDisplay } from "@/lib/fonts";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { headers } from "next/headers";
+import { Toaster } from "@/components/ui/sonner";
 
 // generated metadata is from helper to have a single source of truth for metadata across the app
 export const metadata = generateMetadata({
@@ -26,18 +28,25 @@ export const metadata = generateMetadata({
   type: "website",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+  
+  // Don't show navbar/footer on admin and login pages
+  const hideNavFooter = pathname.startsWith("/admin") || pathname.startsWith("/login");
+
   return (
     <html lang="en" className={`${inter.variable} ${playfairDisplay.variable} min-h-full`}>
       
       <body className={`${inter.className} antialiased`}>
-        <Navbar />
+        {!hideNavFooter && <Navbar />}
         {children}
-        <Footer />
+        {!hideNavFooter && <Footer />}
+        <Toaster position="top-right" richColors expand={false} />
       </body>
     </html>
   );
