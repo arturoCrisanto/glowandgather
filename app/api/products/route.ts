@@ -8,7 +8,7 @@ export async function GET() {
     const products = await productService.getAllProducts();
 
     // Transform the data to match frontend expectations
-    const transformedProducts = products.map((product) =>
+    const transformedProducts = products.map((product: any) =>
       productService.transformForFrontend(product)
     );
 
