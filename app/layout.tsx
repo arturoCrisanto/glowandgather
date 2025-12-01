@@ -2,6 +2,7 @@ import { generateMetadata } from "@/lib/helpers";
 import { inter, playfairDisplay } from "@/lib/fonts";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 // generated metadata is from helper to have a single source of truth for metadata across the app
 export const metadata = generateMetadata({
@@ -32,9 +33,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${playfairDisplay.variable} min-h-full`}>
-      <Navbar />
+      
       <body className={`${inter.className} antialiased`}>
+        <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
